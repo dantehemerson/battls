@@ -48,5 +48,5 @@ cargo test
 
 ## License
 
-- [MIT](./LICENSE.md)
+- [GPL v3.0](./LICENSE)
 
