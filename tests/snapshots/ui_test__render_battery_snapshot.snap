@@ -1,0 +1,13 @@
+---
+source: tests/ui_test.rs
+expression: output_str
+---
+┌──────────────────────────────────────────┐
+│ BAT0                                     │
+├──────────────────────────────────────────┤
+│ Status: Discharging    Health:  80%      │
+│ Manufacturer: Dante's Co                 │
+│ Charge: █████████████░░░░░  75%          │
+│ Cycles: 100            Power: —          │
+│ Energy: 4.0 / 5.0 Wh                     │
+└──────────────────────────────────────────┘

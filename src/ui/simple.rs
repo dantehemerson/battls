@@ -1,4 +1,5 @@
 use crate::battery::model::Battery;
+use std::io::{self, Write};
 
 fn bar(percent: u8, width: usize) -> String {
     let filled = percent as usize * width / 100;
@@ -20,42 +21,46 @@ fn pad(s: &str, width: usize) -> String {
 }
 
 pub fn render(batteries: &[Battery]) {
+    render_to(batteries, &mut io::stdout());
+}
+
+pub fn render_to(batteries: &[Battery], writer: &mut dyn Write) {
     for bat in batteries {
-        render_battery(bat);
-        println!();
+        render_battery_to(bat, writer);
+        writeln!(writer).unwrap();
     }
 }
 
-fn render_battery(bat: &Battery) {
+fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
     let width = 40;
     let bar_width = 18;
 
     let title = format!("{}", bat.name);
 
-    println!("┌{}┐", "─".repeat(width + 2));
-    println!("│ {} │", pad(&title, width));
-    println!("├{}┤", "─".repeat(width + 2));
+    writeln!(writer, "┌{}┐", "─".repeat(width + 2)).unwrap();
+    writeln!(writer, "│ {} │", pad(&title, width)).unwrap();
+    writeln!(writer, "├{}┤", "─".repeat(width + 2)).unwrap();
 
     let status_health = format!(
         "Status: {:<14} Health: {:>3.0}%",
         bat.status,
         bat.health().unwrap_or(0.0)
     );
-    println!("| {} |", pad(&status_health, width));
+    writeln!(writer, "│ {} │", pad(&status_health, width)).unwrap();
 
 
     let manufacturer = format!(
         "Manufacturer: {}",
         bat.manufacturer,
     );
-    println!("| {} |", pad(&manufacturer, width));
+    writeln!(writer, "│ {} │", pad(&manufacturer, width)).unwrap();
 
     let charge = format!(
         "Charge: {} {:>3}%",
         bar(bat.capacity, bar_width),
         bat.capacity
     );
-    println!("│ {} │", pad(&charge, width));
+    writeln!(writer, "│ {} │", pad(&charge, width)).unwrap();
 
     let cycles_power = format!(
         "Cycles: {:<5}          Power: {}",
@@ -64,14 +69,14 @@ fn render_battery(bat: &Battery) {
             .unwrap_or_else(|| "N/A".into()),
         "—"
     );
-    println!("│ {} │", pad(&cycles_power, width));
+    writeln!(writer, "│ {} │", pad(&cycles_power, width)).unwrap();
 
     let energy = format!(
         "Energy: {:.1} / {:.1} Wh",
         bat.energy_full as f64 / 1_000_000.0,
         bat.energy_full_design as f64 / 1_000_000.0,
     );
-    println!("│ {} │", pad(&energy, width));
+    writeln!(writer, "│ {} │", pad(&energy, width)).unwrap();
 
-    println!("└{}┘", "─".repeat(width + 2));
+    writeln!(writer, "└{}┘", "─".repeat(width + 2)).unwrap();
 }
