@@ -10,7 +10,6 @@ fn bar(percent: u8, width: usize) -> String {
     )
 }
 
-
 fn pad(s: &str, width: usize) -> String {
     let len = s.chars().count();
     if len >= width {
@@ -24,16 +23,15 @@ pub fn render(batteries: &[Battery]) {
     for bat in batteries {
         render_battery(bat);
         println!();
-    } 
+    }
 }
-
 
 fn render_battery(bat: &Battery) {
     let width = 40;
     let bar_width = 18;
 
     let title = format!("{}", bat.name);
-    
+
     println!("┌{}┐", "─".repeat(width + 2));
     println!("│ {} │", pad(&title, width));
     println!("├{}┤", "─".repeat(width + 2));
@@ -43,8 +41,14 @@ fn render_battery(bat: &Battery) {
         bat.status,
         bat.health().unwrap_or(0.0)
     );
-
     println!("| {} |", pad(&status_health, width));
+
+
+    let manufacturer = format!(
+        "Manufacturer: {}",
+        bat.manufacturer,
+    );
+    println!("| {} |", pad(&manufacturer, width));
 
     let charge = format!(
         "Charge: {} {:>3}%",
@@ -69,7 +73,5 @@ fn render_battery(bat: &Battery) {
     );
     println!("│ {} │", pad(&energy, width));
 
-    println!("│ {} │", pad("Time left: —", width));
     println!("└{}┘", "─".repeat(width + 2));
 }
-

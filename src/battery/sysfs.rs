@@ -20,8 +20,9 @@ pub fn read_batteries() -> Result<Vec<Battery>> {
 
         let base = entry.path();
 
-        let capacity = read(base.join("capacity"))?.parse()?;
         let status = read(base.join("status"))?;
+        let capacity = read(base.join("capacity"))?.parse()?;
+        let manufacturer = read(base.join("manufacturer"))?;
         let energy_full = read(base.join("energy_full"))?.parse().unwrap_or(0);
         let energy_full_design = read(base.join("energy_full_design"))?.parse().unwrap_or(0);
 
@@ -32,6 +33,7 @@ pub fn read_batteries() -> Result<Vec<Battery>> {
 
         batteries.push(Battery {
             name,
+            manufacturer,
             capacity,
             status,
             cycle_count,
@@ -39,6 +41,8 @@ pub fn read_batteries() -> Result<Vec<Battery>> {
             energy_full_design
         })
     }
+
+    batteries.sort_by_key(|b| b.name.clone());
 
     Ok(batteries)
 }

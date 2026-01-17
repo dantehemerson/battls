@@ -1,6 +1,7 @@
 #[derive(Debug)]
 pub struct Battery {
     pub name: String,
+    pub manufacturer: String,
     pub capacity: u8,
     pub status: String,
     pub cycle_count: Option<u32>,
