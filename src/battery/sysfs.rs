@@ -22,6 +22,7 @@ pub fn read_batteries() -> Result<Vec<Battery>> {
         let status = read(base.join("status"))?;
         let capacity = read(base.join("capacity"))?.parse()?;
         let manufacturer = read(base.join("manufacturer"))?;
+        let model = read(base.join("model_name")).unwrap_or_else(|_| String::new());
         let energy_now = read(base.join("energy_now"))?.parse().unwrap_or(0);
         let energy_full = read(base.join("energy_full"))?.parse().unwrap_or(0);
         let energy_full_design = read(base.join("energy_full_design"))?.parse().unwrap_or(0);
@@ -48,6 +49,7 @@ pub fn read_batteries() -> Result<Vec<Battery>> {
         batteries.push(Battery {
             name,
             manufacturer,
+            model,
             capacity,
             status,
             cycle_count,

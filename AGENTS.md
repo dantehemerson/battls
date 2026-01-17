@@ -1,6 +1,6 @@
-# Battery Monitor
+# battls
 
-A simple Rust CLI tool that displays battery information on Linux.
+A simple Rust CLI tool that lists battery information on Linux.
 
 ## How It Works
 
