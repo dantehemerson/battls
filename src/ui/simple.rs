@@ -33,7 +33,7 @@ pub fn render_to(batteries: &[Battery], writer: &mut dyn Write) {
 }
 
 fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
-    let default_width = 46;
+    let default_width = 48;
     let bar_width = 18;
 
     let name_len = bat.name.chars().count();
@@ -88,7 +88,7 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
     let power_str = bat.power()
         .map(|p| format!("{:>6.2} W", p))
         .unwrap_or_else(|| "N/A".into());
-    let voltage_power = format!("{:<24}Power: {}", voltage_str, power_str);
+    let voltage_power = format!("{:<32}Power: {}", voltage_str, power_str);
     lines.push(format!("│ {} │", pad(&voltage_power, width)));
 
     let capacity_str = format!(
@@ -97,7 +97,7 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
         format_wh(bat.energy_full as f64 / 1_000_000.0)
     );
     let health_str = format!("{:>4.0}%", bat.health().unwrap_or(0.0));
-    let capacity_health = format!("{:<24}Health: {}", capacity_str, health_str);
+    let capacity_health = format!("{:<32}Health: {}", capacity_str, health_str);
     lines.push(format!("│ {} │", pad(&capacity_health, width)));
 
     let full_charge_capacity = format!("Full charge capacity: {}", format_wh(bat.energy_full as f64 / 1_000_000.0));

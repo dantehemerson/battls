@@ -1,5 +1,6 @@
 ---
 source: tests/ui_test.rs
+assertion_line: 25
 expression: output_str
 ---
 ╭────────────────────────────────────────────────╮
@@ -9,8 +10,8 @@ expression: output_str
 │ Charge: █████████████░░░░░  75%                ├──╮
 │ Manufacturer: Dante's Co                       │  │
 │ Cycles: 100                                    │  │
-│ Voltage: 12.0 V         Power:  15.00 W        │  │
-│ Capacity: 30 Wh / 40 Wh Health:  800%          ├──╯
+│ Voltage: 12.0 V                 Power:  15.00 W │  │
+│ Capacity: 30 Wh / 40 Wh         Health:  800%  ├──╯
 │ Full charge capacity: 40 Wh                    │
 │ Design capacity: 5 Wh                          │
 ╰────────────────────────────────────────────────╯
