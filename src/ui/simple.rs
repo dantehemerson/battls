@@ -33,13 +33,35 @@ pub fn render_to(batteries: &[Battery], writer: &mut dyn Write) {
 }
 
 fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
-    let width = 40;
+    let default_width = 40;
     let bar_width = 18;
+
+    // Calculate required width to fit name + model
+    let name_len = bat.name.chars().count();
+    let required_width = if bat.model.is_empty() {
+        default_width
+    } else {
+        let model_label = "Model: ";
+        let model_label_len = model_label.chars().count();
+        let model_len = bat.model.chars().count();
+        let min_spacing = 4; // Minimum spacing between name and model
+        let required = name_len + min_spacing + model_label_len + model_len;
+        default_width.max(required)
+    };
+    let width = required_width;
 
     let mut lines: Vec<String> = Vec::new();
 
-    lines.push(format!("┌{}┐", "─".repeat(width + 2)));
-    lines.push(format!("│ {} │", pad(&bat.name, width)));
+    lines.push(format!("╭{}╮", "─".repeat(width + 2)));
+    let name_mode = if bat.model.is_empty() {
+        bat.name.clone()
+    } else {
+        let model_label = format!("Model: {}", bat.model);
+        let mode_len = model_label.chars().count();
+        let spacing = width.saturating_sub(name_len + mode_len);
+        format!("{}{}{}", bat.name, " ".repeat(spacing), model_label)
+    };
+    lines.push(format!("│ {} │", pad(&name_mode, width)));
     lines.push(format!("├{}┤", "─".repeat(width + 2)));
 
     let status_health = format!(
@@ -49,15 +71,15 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
     );
     lines.push(format!("│ {} │", pad(&status_health, width)));
 
-    let manufacturer = format!("Manufacturer: {}", bat.manufacturer);
-    lines.push(format!("│ {} │", pad(&manufacturer, width)));
-
     let charge = format!(
         "Charge: {} {:>3}%",
         bar(bat.capacity, bar_width),
         bat.capacity
     );
     lines.push(format!("│ {} │", pad(&charge, width)));
+
+    let manufacturer = format!("Manufacturer: {}", bat.manufacturer);
+    lines.push(format!("│ {} │", pad(&manufacturer, width)));
 
     let cycles_power = format!(
         "Cycles: {:<5}          Power: {}",
@@ -71,7 +93,7 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
     lines.push(format!("│ {} │", pad(&cycles_power, width)));
 
     let energy = format!(
-        "Energy: {} / {}",
+        "Capacity: {} / {}",
         format_wh(bat.energy_now as f64 / 1_000_000.0),
         format_wh(bat.energy_full as f64 / 1_000_000.0),
     );
@@ -86,7 +108,7 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
     let design_capacity = format!("Design capacity: {}", format_wh(bat.energy_full_design as f64 / 1_000_000.0));
     lines.push(format!("│ {} │", pad(&design_capacity, width)));
 
-    lines.push(format!("└{}┘", "─".repeat(width + 2)));
+    lines.push(format!("╰{}╯", "─".repeat(width + 2)));
 
     let total_lines = lines.len();
     let nub_height = 5;
@@ -96,12 +118,12 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
     for (i, line) in lines.iter().enumerate() {
         if i == nub_start {
             let trimmed: String = line.chars().take(line.chars().count() - 1).collect();
-            writeln!(writer, "{}├──┐", trimmed).unwrap();
+            writeln!(writer, "{}├──╮", trimmed).unwrap();
         } else if i > nub_start && i < nub_start + nub_height - 1 {
             writeln!(writer, "{}  │", line).unwrap();
         } else if i == nub_start + nub_height - 1 {
             let trimmed: String = line.chars().take(line.chars().count() - 1).collect();
-            writeln!(writer, "{}├──┘", trimmed).unwrap();
+            writeln!(writer, "{}├──╯", trimmed).unwrap();
         } else {
             writeln!(writer, "{}", line).unwrap();
         }
