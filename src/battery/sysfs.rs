@@ -2,7 +2,6 @@ use std::{fs, path::Path};
 use anyhow::Result;
 use super::model::Battery;
 
-
 fn read<P: AsRef<Path>>(path: P) -> Result<String> {
     Ok(fs::read_to_string(path)?.trim().to_string())
 }

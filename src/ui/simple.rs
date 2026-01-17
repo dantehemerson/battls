@@ -35,32 +35,28 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
     let width = 40;
     let bar_width = 18;
 
-    let title = format!("{}", bat.name);
+    let mut lines: Vec<String> = Vec::new();
 
-    writeln!(writer, "┌{}┐", "─".repeat(width + 2)).unwrap();
-    writeln!(writer, "│ {} │", pad(&title, width)).unwrap();
-    writeln!(writer, "├{}┤", "─".repeat(width + 2)).unwrap();
+    lines.push(format!("┌{}┐", "─".repeat(width + 2)));
+    lines.push(format!("│ {} │", pad(&bat.name, width)));
+    lines.push(format!("├{}┤", "─".repeat(width + 2)));
 
     let status_health = format!(
         "Status: {:<14} Health: {:>3.0}%",
         bat.status,
         bat.health().unwrap_or(0.0)
     );
-    writeln!(writer, "│ {} │", pad(&status_health, width)).unwrap();
+    lines.push(format!("│ {} │", pad(&status_health, width)));
 
-
-    let manufacturer = format!(
-        "Manufacturer: {}",
-        bat.manufacturer,
-    );
-    writeln!(writer, "│ {} │", pad(&manufacturer, width)).unwrap();
+    let manufacturer = format!("Manufacturer: {}", bat.manufacturer);
+    lines.push(format!("│ {} │", pad(&manufacturer, width)));
 
     let charge = format!(
         "Charge: {} {:>3}%",
         bar(bat.capacity, bar_width),
         bat.capacity
     );
-    writeln!(writer, "│ {} │", pad(&charge, width)).unwrap();
+    lines.push(format!("│ {} │", pad(&charge, width)));
 
     let cycles_power = format!(
         "Cycles: {:<5}          Power: {}",
@@ -71,20 +67,36 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
             .map(|p| format!("{:>6.2} W", p))
             .unwrap_or_else(|| "N/A".into())
     );
-    writeln!(writer, "│ {} │", pad(&cycles_power, width)).unwrap();
+    lines.push(format!("│ {} │", pad(&cycles_power, width)));
 
     let energy = format!(
         "Energy: {:.1} / {:.1} Wh",
         bat.energy_full as f64 / 1_000_000.0,
         bat.energy_full_design as f64 / 1_000_000.0,
     );
-    writeln!(writer, "│ {} │", pad(&energy, width)).unwrap();
+    lines.push(format!("│ {} │", pad(&energy, width)));
 
-    let voltage = format!(
-        "Voltage: {:.1} V",
-        bat.voltage().unwrap_or(0.0)
-    );
-    writeln!(writer, "│ {} │", pad(&voltage, width)).unwrap();
+    let voltage = format!("Voltage: {:.1} V", bat.voltage().unwrap_or(0.0));
+    lines.push(format!("│ {} │", pad(&voltage, width)));
 
-    writeln!(writer, "└{}┘", "─".repeat(width + 2)).unwrap();
+    lines.push(format!("└{}┘", "─".repeat(width + 2)));
+
+    let total_lines = lines.len();
+    let nub_height = 5;
+    let nub_start = (total_lines - nub_height) / 2 + 1;
+
+    // Draw battery head
+    for (i, line) in lines.iter().enumerate() {
+        if i == nub_start {
+            let trimmed: String = line.chars().take(line.chars().count() - 1).collect();
+            writeln!(writer, "{}├──┐", trimmed).unwrap();
+        } else if i > nub_start && i < nub_start + nub_height - 1 {
+            writeln!(writer, "{}  │", line).unwrap();
+        } else if i == nub_start + nub_height - 1 {
+            let trimmed: String = line.chars().take(line.chars().count() - 1).collect();
+            writeln!(writer, "{}├──┘", trimmed).unwrap();
+        } else {
+            writeln!(writer, "{}", line).unwrap();
+        }
+    }
 }
