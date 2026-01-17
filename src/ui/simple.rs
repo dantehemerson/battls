@@ -85,9 +85,7 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
     lines.push(format!("│ {} │", pad(&cycles, width)));
 
     let voltage_str = format!("Voltage: {:.1} V", bat.voltage().unwrap_or(0.0));
-    let power_str = bat.power()
-        .map(|p| format!("{:>6.2} W", p))
-        .unwrap_or_else(|| "N/A".into());
+    let power_str = format!("{:>6.2} W", bat.power().unwrap_or(0.0));
     let voltage_power = format!("{:<32}Power: {}", voltage_str, power_str);
     lines.push(format!("│ {} │", pad(&voltage_power, width)));
 
