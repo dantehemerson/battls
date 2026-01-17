@@ -1,4 +1,5 @@
 use crate::battery::model::Battery;
+use crate::formatter::format_wh;
 use std::io::{self, Write};
 
 fn bar(percent: u8, width: usize) -> String {
@@ -70,16 +71,16 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
     lines.push(format!("│ {} │", pad(&cycles_power, width)));
 
     let energy = format!(
-        "Energy: {:.1} / {:.1} Wh",
-        bat.energy_now as f64 / 1_000_000.0,
-        bat.energy_full as f64 / 1_000_000.0,
+        "Energy: {} / {}",
+        format_wh(bat.energy_now as f64 / 1_000_000.0),
+        format_wh(bat.energy_full as f64 / 1_000_000.0),
     );
     lines.push(format!("│ {} │", pad(&energy, width)));
 
     let voltage = format!("Voltage: {:.1} V", bat.voltage().unwrap_or(0.0));
     lines.push(format!("│ {} │", pad(&voltage, width)));
 
-    let full_charge_capacity = format!("Full charge capacity: {:.2} Wh", bat.energy_full as f64 / 1_000_000.0);
+    let full_charge_capacity = format!("Full charge capacity: {}", format_wh(bat.energy_full as f64 / 1_000_000.0));
     lines.push(format!("│ {} │", pad(&full_charge_capacity, width)));
 
     let design_capacity = format!("Design capacity: {}", format_wh(bat.energy_full_design as f64 / 1_000_000.0));

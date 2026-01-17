@@ -3,6 +3,7 @@ use anyhow::Result;
 use battery::sysfs::read_batteries;
 
 mod battery;
+mod formatter;
 mod ui;
 
 fn main() -> Result<()> {
