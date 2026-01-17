@@ -33,10 +33,9 @@ pub fn render_to(batteries: &[Battery], writer: &mut dyn Write) {
 }
 
 fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
-    let default_width = 40;
+    let default_width = 46;
     let bar_width = 18;
 
-    // Calculate required width to fit name + model
     let name_len = bat.name.chars().count();
     let required_width = if bat.model.is_empty() {
         default_width
@@ -44,7 +43,7 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
         let model_label = "Model: ";
         let model_label_len = model_label.chars().count();
         let model_len = bat.model.chars().count();
-        let min_spacing = 4; // Minimum spacing between name and model
+        let min_spacing = 4;
         let required = name_len + min_spacing + model_label_len + model_len;
         default_width.max(required)
     };
@@ -64,12 +63,8 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
     lines.push(format!("│ {} │", pad(&name_mode, width)));
     lines.push(format!("├{}┤", "─".repeat(width + 2)));
 
-    let status_health = format!(
-        "Status: {:<14} Health: {:>3.0}%",
-        bat.status,
-        bat.health().unwrap_or(0.0)
-    );
-    lines.push(format!("│ {} │", pad(&status_health, width)));
+    let status = format!("Status: {}", bat.status);
+    lines.push(format!("│ {} │", pad(&status, width)));
 
     let charge = format!(
         "Charge: {} {:>3}%",
@@ -81,26 +76,29 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
     let manufacturer = format!("Manufacturer: {}", bat.manufacturer);
     lines.push(format!("│ {} │", pad(&manufacturer, width)));
 
-    let cycles_power = format!(
-        "Cycles: {:<5}          Power: {}",
+    let cycles = format!(
+        "Cycles: {}",
         bat.cycle_count
             .map(|c| c.to_string())
-            .unwrap_or_else(|| "N/A".into()),
-        bat.power()
-            .map(|p| format!("{:>6.2} W", p))
             .unwrap_or_else(|| "N/A".into())
     );
-    lines.push(format!("│ {} │", pad(&cycles_power, width)));
+    lines.push(format!("│ {} │", pad(&cycles, width)));
 
-    let energy = format!(
+    let voltage_str = format!("Voltage: {:.1} V", bat.voltage().unwrap_or(0.0));
+    let power_str = bat.power()
+        .map(|p| format!("{:>6.2} W", p))
+        .unwrap_or_else(|| "N/A".into());
+    let voltage_power = format!("{:<24}Power: {}", voltage_str, power_str);
+    lines.push(format!("│ {} │", pad(&voltage_power, width)));
+
+    let capacity_str = format!(
         "Capacity: {} / {}",
         format_wh(bat.energy_now as f64 / 1_000_000.0),
-        format_wh(bat.energy_full as f64 / 1_000_000.0),
+        format_wh(bat.energy_full as f64 / 1_000_000.0)
     );
-    lines.push(format!("│ {} │", pad(&energy, width)));
-
-    let voltage = format!("Voltage: {:.1} V", bat.voltage().unwrap_or(0.0));
-    lines.push(format!("│ {} │", pad(&voltage, width)));
+    let health_str = format!("{:>4.0}%", bat.health().unwrap_or(0.0));
+    let capacity_health = format!("{:<24}Health: {}", capacity_str, health_str);
+    lines.push(format!("│ {} │", pad(&capacity_health, width)));
 
     let full_charge_capacity = format!("Full charge capacity: {}", format_wh(bat.energy_full as f64 / 1_000_000.0));
     lines.push(format!("│ {} │", pad(&full_charge_capacity, width)));

@@ -11,8 +11,8 @@ fn test_render_battery_snapshot() {
         capacity: 75,
         status: "Discharging".to_string(),
         cycle_count: Some(100),
-        energy_now: 3000000,
-        energy_full: 4000000,
+        energy_now: 30000000,
+        energy_full: 40000000,
         energy_full_design: 5000000,
         voltage_now: 12000000,
         power_now: 15000000, // 15W in microwatts
