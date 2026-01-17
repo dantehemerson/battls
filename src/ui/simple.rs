@@ -67,7 +67,9 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
         bat.cycle_count
             .map(|c| c.to_string())
             .unwrap_or_else(|| "N/A".into()),
-        "—"
+        bat.power()
+            .map(|p| format!("{:>6.2} W", p))
+            .unwrap_or_else(|| "N/A".into())
     );
     writeln!(writer, "│ {} │", pad(&cycles_power, width)).unwrap();
 
@@ -77,6 +79,12 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
         bat.energy_full_design as f64 / 1_000_000.0,
     );
     writeln!(writer, "│ {} │", pad(&energy, width)).unwrap();
+
+    let voltage = format!(
+        "Voltage: {:.1} V",
+        bat.voltage().unwrap_or(0.0)
+    );
+    writeln!(writer, "│ {} │", pad(&voltage, width)).unwrap();
 
     writeln!(writer, "└{}┘", "─".repeat(width + 2)).unwrap();
 }
