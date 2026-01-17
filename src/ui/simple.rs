@@ -71,8 +71,8 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
 
     let energy = format!(
         "Energy: {:.1} / {:.1} Wh",
+        bat.energy_now as f64 / 1_000_000.0,
         bat.energy_full as f64 / 1_000_000.0,
-        bat.energy_full_design as f64 / 1_000_000.0,
     );
     lines.push(format!("│ {} │", pad(&energy, width)));
 

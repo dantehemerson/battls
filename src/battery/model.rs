@@ -5,6 +5,7 @@ pub struct Battery {
     pub capacity: u8,
     pub status: String,
     pub cycle_count: Option<u32>,
+    pub energy_now: u64,
     pub energy_full: u64,
     pub energy_full_design: u64,
     pub voltage_now: u64,
