@@ -1,6 +1,6 @@
-# Battery Monitor 🔋
+# battls 🔋
 
-A simple utility that displays your battery information.
+A simple CLI utility that lists your battery information.
 
 ## Features ✨
 

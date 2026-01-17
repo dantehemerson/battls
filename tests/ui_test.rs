@@ -1,5 +1,5 @@
-use battery::battery::model::Battery;
-use battery::ui::simple::render_to;
+use battls::battery::model::Battery;
+use battls::ui::simple::render_to;
 use insta::assert_snapshot;
 
 #[test]
