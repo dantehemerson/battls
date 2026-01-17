@@ -79,6 +79,12 @@ fn render_battery_to(bat: &Battery, writer: &mut dyn Write) {
     let voltage = format!("Voltage: {:.1} V", bat.voltage().unwrap_or(0.0));
     lines.push(format!("│ {} │", pad(&voltage, width)));
 
+    let full_charge_capacity = format!("Full charge capacity: {:.2} Wh", bat.energy_full as f64 / 1_000_000.0);
+    lines.push(format!("│ {} │", pad(&full_charge_capacity, width)));
+
+    let design_capacity = format!("Design capacity: {}", format_wh(bat.energy_full_design as f64 / 1_000_000.0));
+    lines.push(format!("│ {} │", pad(&design_capacity, width)));
+
     lines.push(format!("└{}┘", "─".repeat(width + 2)));
 
     let total_lines = lines.len();
